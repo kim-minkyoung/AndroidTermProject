@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">AndroidTermProject</string>
+    <string name="drawer_opened">Drawer open!!</string>
+    <string name="drawer_closed">Drawer closed!!</string>
 </resources>
