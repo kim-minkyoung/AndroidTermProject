@@ -1,0 +1,37 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="profileData"
+            type="com.example.androidtermproject.CalendarActivity.ProfileData" />
+    </data>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="237dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="#E61A1A1A"
+        android:gravity="top">
+
+        <include layout="@layout/calendar_drawer_list" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="72dp"
+            android:text="MUSIC BUDDIES"
+            android:textColor="@color/white"
+            android:textSize="18dp"/>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <include
+                layout="@layout/calendar_drawer_list"
+                app:profileData="@{profileData}" />
+
+        </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
+</layout>
