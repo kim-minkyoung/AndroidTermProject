@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AlertDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <!-- 여기에 AlertDialog에 대한 추가적인 스타일을 지정할 수 있습니다. -->
+        <!-- 예: 버튼 색상, 텍스트 색상 등 -->
+    </style>
+
+</resources>
