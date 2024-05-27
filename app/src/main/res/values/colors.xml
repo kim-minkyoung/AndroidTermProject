@@ -6,4 +6,6 @@
     <color name="blocked">#B2B2B2</color>
     <color name="background">#1A1A1A</color>
     <color name="light_background">#333333</color>
+    <color name="drawerBackground">#E61A1A1A</color>
+    <color name="transparent">#001A1A1A</color>
 </resources>
