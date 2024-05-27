@@ -15,6 +15,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        //login 화면
 
         // 버튼 클릭 리스너 설정
         binding.buttonOpenCalendar.setOnClickListener {
