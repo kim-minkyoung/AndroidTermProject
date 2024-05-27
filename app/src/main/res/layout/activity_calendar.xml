@@ -13,23 +13,44 @@
     <androidx.drawerlayout.widget.DrawerLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/drawer">
+        android:id="@+id/drawer"
+        android:orientation="vertical"
+        android:background="@color/background"
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:gravity="center">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Calendar 구현해주셔용"/>
+
+            <CalendarView
+                android:id="@+id/calendarView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:theme="@style/CalenderViewCustom"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <!-- Calendar view -->
         </LinearLayout>
+
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            >
+            
+        </ListView>
+
+
 
         <!-- Drawer layout -->
         <include layout="@layout/calendar_drawer_layout"
             android:id="@+id/calendarDrawerLayout"/>
+
+
 
     </androidx.drawerlayout.widget.DrawerLayout>
 </layout>

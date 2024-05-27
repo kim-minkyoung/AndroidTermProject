@@ -22,7 +22,7 @@ class LoginActivity : AppCompatActivity() {
             val password = binding.password.text.toString()
 
             // 간단한 ID 및 비밀번호 확인 (예제)
-            if (id == "admin" && password == "admin") {
+            if (id == "123" && password == "123") {
                 val intent = Intent(this, CalendarActivity::class.java)
                 startActivity(intent)
             } else {

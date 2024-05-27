@@ -5,4 +5,12 @@
         <!-- 예: 버튼 색상, 텍스트 색상 등 -->
     </style>
 
+    <!-- 달력 색상 및 간격 커스텀-->
+    <style name="CalenderViewCustom" parent="Theme.AppCompat">
+        <item name="colorAccent">@color/purplePoint</item>
+        <item name="colorPrimary">@color/purplePoint</item>
+        <item name="android:textColorPrimary">@color/white</item>
+    </style>
+
+
 </resources>
