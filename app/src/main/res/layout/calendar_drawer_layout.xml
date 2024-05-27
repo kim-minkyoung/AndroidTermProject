@@ -5,6 +5,9 @@
     <data>
         <import type="java.util.List" />
         <variable
+            name="myProfile"
+            type="com.example.androidtermproject.CalendarActivity.ProfileData" />
+        <variable
             name="friendsProfile"
             type="List&lt;com.example.androidtermproject.CalendarActivity.ProfileData&gt;" />
     </data>
@@ -13,21 +16,40 @@
         android:orientation="vertical"
         android:layout_width="237dp"
         android:layout_height="match_parent"
-        android:layout_gravity="start"
+        android:layout_gravity="start|center"
         android:background="#E61A1A1A"
-        android:gravity="top">
+        android:gravity="start|center"
+        >
 
-        <TextView
+<!--        <androidx.recyclerview.widget.RecyclerView-->
+<!--            android:id="@+id/myProfile"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"/>-->
+
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="72dp"
-            android:text="MUSIC BUDDIES"
-            android:textColor="@color/white"
-            android:textSize="18dp"/>
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Space
+                android:layout_width="12dp"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:gravity="start|center"
+                android:layout_width="wrap_content"
+                android:layout_height="72dp"
+                android:text="MUSIC BUDDIES"
+                android:textColor="@color/white"
+                android:textSize="18dp"/>
+        </LinearLayout>
+
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/profileRecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:gravity="start|center"/>
 
     </LinearLayout>
 </layout>

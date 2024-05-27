@@ -8,19 +8,29 @@
     </data>
 
     <LinearLayout
-        android:orientation="vertical"
+        android:gravity="start|center"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="72dp">
+
+        <Space
+            android:layout_width="16dp"
+            android:layout_height="wrap_content"/>
 
         <ImageView
             android:id="@+id/profileImg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:src="@{profile.img}" />
+
+        <Space
+            android:layout_width="12dp"
+            android:layout_height="wrap_content"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/white"
             android:text="@{profile.name}" />
 
     </LinearLayout>
