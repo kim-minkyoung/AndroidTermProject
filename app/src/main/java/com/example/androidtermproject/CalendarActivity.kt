@@ -28,7 +28,7 @@ class CalendarActivity : AppCompatActivity() {
         drawerBinding = binding.calendarDrawerLayout
         val myProfileData = ProfileData(
             img = R.drawable.my_default_profile,
-            name = "My Profile",
+            name = "Profile 1",
             color = ContextCompat.getColor(this, R.color.purplePoint)
         )
 
@@ -36,7 +36,7 @@ class CalendarActivity : AppCompatActivity() {
             myProfileData,
             ProfileData(
                 img = R.drawable.friend_default_profile,
-                name = "Friend 1",
+                name = "Friend 2",
                 color = ContextCompat.getColor(this, R.color.transparent)
             )
         )
