@@ -1,6 +1,6 @@
 package com.example.androidtermproject
 
-import ProfileAdapter
+import DrawerAdapter
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.MenuItem
@@ -48,7 +48,7 @@ class CalendarActivity : AppCompatActivity() {
         drawerBinding.friendsProfile = friendsProfile
 
         drawerBinding.profileRecyclerView.layoutManager = LinearLayoutManager(this)
-        drawerBinding.profileRecyclerView.adapter = ProfileAdapter(friendsProfile)
+        drawerBinding.profileRecyclerView.adapter = DrawerAdapter(friendsProfile)
 
         drawerBinding.logoutButton.setOnClickListener {
             showLogoutDialog()
