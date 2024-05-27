@@ -1,9 +1,13 @@
 package com.example.androidtermproject
 
 import ProfileAdapter
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.EditText
+import android.widget.LinearLayout
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -45,6 +49,50 @@ class CalendarActivity : AppCompatActivity() {
 
         drawerBinding.profileRecyclerView.layoutManager = LinearLayoutManager(this)
         drawerBinding.profileRecyclerView.adapter = ProfileAdapter(friendsProfile)
+
+        drawerBinding.logoutButton.setOnClickListener {
+            showLogoutDialog()
+        }
+        drawerBinding.withdrawButton.setOnClickListener {
+            showWithdrawDialog()
+        }
+    }
+
+    private fun showLogoutDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage("로그아웃 하시겠습니까?")
+        builder.setPositiveButton("로그아웃") { dialog, _ ->
+            // 로그아웃 로직을 여기에 추가
+            // 예를 들어, 로그인 화면으로 이동하는 등의 동작을 수행할 수 있습니다.
+            dialog.dismiss() // 다이얼로그 닫기
+        }
+        builder.setNegativeButton("취소", null)
+        builder.show()
+    }
+
+    private fun showWithdrawDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("탈퇴")
+
+        // 다이얼로그에 여러 줄을 입력할 수 있는 EditText 추가
+        val input = EditText(this)
+        input.maxLines = 5 // 여러 줄 입력 가능하도록 설정
+        input.hint = "탈퇴 사유 (100글자 제한)" // placeholder 설정
+        val lp = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.MATCH_PARENT
+        )
+        input.layoutParams = lp
+        builder.setView(input)
+
+        builder.setPositiveButton("탈퇴") { dialog, _ ->
+            val withdrawReason = input.text.toString()
+            // 탈퇴 이유를 처리하는 로직을 여기에 추가
+            // withdrawReason을 이용하여 탈퇴 처리를 수행할 수 있습니다.
+            dialog.dismiss() // 다이얼로그 닫기
+        }
+        builder.setNegativeButton("취소", null)
+        builder.show()
     }
 
     data class ProfileData(val img: Int, val name: String, val color: Int?)
