@@ -24,6 +24,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Calendar 구현해주셔용"/>
+            <!-- Calendar view -->
         </LinearLayout>
 
         <!-- Drawer layout -->
