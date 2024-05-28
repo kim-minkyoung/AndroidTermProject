@@ -12,13 +12,16 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.androidtermproject.databinding.ActivityCalendarBinding
 import com.example.androidtermproject.databinding.CalendarDrawerLayoutBinding
+import com.example.androidtermproject.databinding.CalendarDrawerListBinding
 
 class CalendarActivity : AppCompatActivity() {
     lateinit var toggle: ActionBarDrawerToggle
     lateinit var binding: ActivityCalendarBinding
     lateinit var drawerBinding: CalendarDrawerLayoutBinding
+    lateinit var drawerListBinding: CalendarDrawerListBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +34,7 @@ class CalendarActivity : AppCompatActivity() {
         toggle.syncState()
 
         drawerBinding = binding.calendarDrawerLayout
+
         val myProfileData = ProfileData(
             img = R.drawable.my_default_profile,
             name = "Profile 1",
@@ -46,7 +50,16 @@ class CalendarActivity : AppCompatActivity() {
             )
         )
 
-        drawerBinding.friendsProfile = friendsProfile
+        drawerBinding.myProfileButton.setOnClickListener{
+            val intent = Intent(this, ProfileActivity::class.java)
+            startActivity(intent)
+        }
+//
+//
+//        drawerListBinding.friendsProfileButton.setOnClickListener {
+//            val intent = Intent(this, ProfileActivity::class.java)
+//            startActivity(intent)
+//        }
 
         drawerBinding.profileRecyclerView.layoutManager = LinearLayoutManager(this)
         drawerBinding.profileRecyclerView.adapter = DrawerAdapter(friendsProfile)
