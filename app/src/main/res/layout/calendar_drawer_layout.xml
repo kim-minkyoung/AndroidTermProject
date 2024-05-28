@@ -22,7 +22,7 @@
         >
 
         <Button
-            android:id="@+id/profileButton"
+            android:id="@+id/myProfileButton"
             android:gravity="start|center"
             android:layout_width="match_parent"
             android:layout_height="72dp"
