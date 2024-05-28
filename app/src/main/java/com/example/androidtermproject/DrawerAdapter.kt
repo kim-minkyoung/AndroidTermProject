@@ -4,7 +4,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.androidtermproject.CalendarActivity.ProfileData
 import com.example.androidtermproject.databinding.CalendarDrawerListBinding
 
-class DrawerAdapter(private val Drawers: List<ProfileData>) : RecyclerView.Adapter<DrawerAdapter.DrawerViewHolder>() {
+class DrawerAdapter(private val profiles: List<ProfileData>) : RecyclerView.Adapter<DrawerAdapter.DrawerViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DrawerViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -13,13 +13,14 @@ class DrawerAdapter(private val Drawers: List<ProfileData>) : RecyclerView.Adapt
     }
 
     override fun onBindViewHolder(holder: DrawerViewHolder, position: Int) {
-        val Drawer = Drawers[position]
-        holder.bind(Drawer)
+        val profile = profiles[position]
+        holder.binding.profile = profile
+        holder.binding.executePendingBindings()
     }
 
-    override fun getItemCount(): Int = Drawers.size
+    override fun getItemCount(): Int = profiles.size
 
-    inner class DrawerViewHolder(private val binding: CalendarDrawerListBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class DrawerViewHolder(val binding: CalendarDrawerListBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(profile: ProfileData) {
             binding.profile = profile
             binding.executePendingBindings()
