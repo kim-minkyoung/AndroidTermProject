@@ -1,9 +1,10 @@
 package com.example.androidtermproject
 
 import DrawerAdapter
-import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -55,6 +56,12 @@ class CalendarActivity : AppCompatActivity() {
         }
         drawerBinding.withdrawButton.setOnClickListener {
             showWithdrawDialog()
+        }
+        val moveToDiaryButton = binding.root.findViewById<Button>(R.id.moveToDiaryButton)
+        moveToDiaryButton.text = "Move to Diary"
+        moveToDiaryButton.setOnClickListener {
+            val intent = Intent(this, DiaryActivity::class.java)
+            startActivity(intent)
         }
     }
 
