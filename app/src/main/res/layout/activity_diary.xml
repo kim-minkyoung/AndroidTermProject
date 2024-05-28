@@ -92,7 +92,7 @@
     </LinearLayout>
 
     <include layout="@layout/footer_button"
-        android:id="@+id/moveToDiaryButton"/>
+        android:id="@+id/music_search_footer_button"/>
 
 
 </LinearLayout>
