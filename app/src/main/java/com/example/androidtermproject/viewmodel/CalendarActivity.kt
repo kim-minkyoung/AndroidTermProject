@@ -1,6 +1,5 @@
 package com.example.androidtermproject.viewmodel
 
-import com.example.androidtermproject.adapter.DrawerAdapter
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
@@ -11,28 +10,48 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.androidtermproject.R
+import com.example.androidtermproject.adapter.DrawerAdapter
 import com.example.androidtermproject.databinding.ActivityCalendarBinding
 import com.example.androidtermproject.databinding.CalendarDrawerLayoutBinding
 import com.example.androidtermproject.databinding.CalendarDrawerListBinding
 
 class CalendarActivity : AppCompatActivity() {
-    lateinit var toggle: ActionBarDrawerToggle
-    lateinit var binding: ActivityCalendarBinding
-    lateinit var drawerBinding: CalendarDrawerLayoutBinding
-    lateinit var drawerListBinding: CalendarDrawerListBinding
+    private lateinit var toggle: ActionBarDrawerToggle
+    private lateinit var binding: ActivityCalendarBinding // 이 줄 추가
+    private lateinit var drawerBinding: CalendarDrawerLayoutBinding
+    private lateinit var drawerListBinding: CalendarDrawerListBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityCalendarBinding.inflate(layoutInflater)
+        binding = ActivityCalendarBinding.inflate(layoutInflater) // 이 줄 추가
         setContentView(binding.root)
 
-        toggle = ActionBarDrawerToggle(this, binding.drawer,
-            R.string.drawer_opened, R.string.drawer_closed
-        )
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        val fromProfile = intent.getBooleanExtra("FROM_PROFILE", false)
+
+        if (fromProfile) {
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            supportActionBar?.setHomeButtonEnabled(true)
+            binding.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        } else {
+            setupDrawer()
+        }
+
+        val moveToDiaryButton = binding.root.findViewById<Button>(R.id.moveToDiaryButton)
+        moveToDiaryButton.text = "Move to Diary"
+        moveToDiaryButton.setOnClickListener {
+            val intent = Intent(this, DiaryActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
+    private fun setupDrawer() {
+        toggle = ActionBarDrawerToggle(this, binding.drawer, R.string.drawer_opened, R.string.drawer_closed)
+        binding.drawer.addDrawerListener(toggle)
         toggle.syncState()
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         drawerBinding = binding.calendarDrawerLayout
 
@@ -51,16 +70,10 @@ class CalendarActivity : AppCompatActivity() {
             )
         )
 
-        drawerBinding.myProfileButton.setOnClickListener{
+        drawerBinding.myProfileButton.setOnClickListener {
             val intent = Intent(this, ProfileActivity::class.java)
             startActivity(intent)
         }
-//
-//
-//        drawerListBinding.friendsProfileButton.setOnClickListener {
-//            val intent = Intent(this, ProfileActivity::class.java)
-//            startActivity(intent)
-//        }
 
         drawerBinding.profileRecyclerView.layoutManager = LinearLayoutManager(this)
         drawerBinding.profileRecyclerView.adapter = DrawerAdapter(friendsProfile)
@@ -71,21 +84,13 @@ class CalendarActivity : AppCompatActivity() {
         drawerBinding.withdrawButton.setOnClickListener {
             showWithdrawDialog()
         }
-        val moveToDiaryButton = binding.root.findViewById<Button>(R.id.moveToDiaryButton)
-        moveToDiaryButton.text = "Move to Diary"
-        moveToDiaryButton.setOnClickListener {
-            val intent = Intent(this, DiaryActivity::class.java)
-            startActivity(intent)
-        }
     }
 
     private fun showLogoutDialog() {
         val builder = AlertDialog.Builder(this)
         builder.setMessage("로그아웃 하시겠습니까?")
         builder.setPositiveButton("로그아웃") { dialog, _ ->
-            // 로그아웃 로직을 여기에 추가
-            // 예를 들어, 로그인 화면으로 이동하는 등의 동작을 수행할 수 있습니다.
-            dialog.dismiss() // 다이얼로그 닫기
+            dialog.dismiss()
         }
         builder.setNegativeButton("취소", null)
         builder.show()
@@ -95,10 +100,9 @@ class CalendarActivity : AppCompatActivity() {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("탈퇴")
 
-        // 다이얼로그에 여러 줄을 입력할 수 있는 EditText 추가
         val input = EditText(this)
-        input.maxLines = 5 // 여러 줄 입력 가능하도록 설정
-        input.hint = "탈퇴 사유 (100글자 제한)" // placeholder 설정
+        input.maxLines = 5
+        input.hint = "탈퇴 사유 (100글자 제한)"
         val lp = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.MATCH_PARENT
@@ -108,9 +112,7 @@ class CalendarActivity : AppCompatActivity() {
 
         builder.setPositiveButton("탈퇴") { dialog, _ ->
             val withdrawReason = input.text.toString()
-            // 탈퇴 이유를 처리하는 로직을 여기에 추가
-            // withdrawReason을 이용하여 탈퇴 처리를 수행할 수 있습니다.
-            dialog.dismiss() // 다이얼로그 닫기
+            dialog.dismiss()
         }
         builder.setNegativeButton("취소", null)
         builder.show()
@@ -119,7 +121,14 @@ class CalendarActivity : AppCompatActivity() {
     data class ProfileData(val img: Int, val name: String, val color: Int?)
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (toggle.onOptionsItemSelected(item)) return true
+        if (intent.getBooleanExtra("FROM_PROFILE", false)) {
+            if (item.itemId == android.R.id.home) {
+                onBackPressed()
+                return true
+            }
+        } else {
+            if (toggle.onOptionsItemSelected(item)) return true // 이 줄 수정
+        }
         return super.onOptionsItemSelected(item)
     }
 }
