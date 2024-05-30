@@ -1,4 +1,4 @@
-package com.example.androidtermproject
+package com.example.androidtermproject.viewmodel
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

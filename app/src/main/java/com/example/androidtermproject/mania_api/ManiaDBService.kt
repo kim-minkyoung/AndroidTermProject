@@ -1,4 +1,4 @@
-package com.example.androidtermproject
+package com.example.androidtermproject.mania_api
 // ManiaDBService.kt
 
 import retrofit2.Call

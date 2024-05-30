@@ -7,7 +7,7 @@
         <import type="java.util.List" />
         <variable
             name="friendsProfile"
-            type="List&lt;com.example.androidtermproject.CalendarActivity.ProfileData&gt;" />
+            type="com.example.androidtermproject.viewmodel.CalendarActivity" />
     </data>
 
     <androidx.drawerlayout.widget.DrawerLayout

@@ -1,7 +1,9 @@
+package com.example.androidtermproject.adapter
+
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.androidtermproject.CalendarActivity.ProfileData
+import com.example.androidtermproject.viewmodel.CalendarActivity.ProfileData
 import com.example.androidtermproject.databinding.CalendarDrawerListBinding
 
 class DrawerAdapter(private val profiles: List<ProfileData>) : RecyclerView.Adapter<DrawerAdapter.DrawerViewHolder>() {

@@ -6,10 +6,10 @@
         <import type="java.util.List" />
         <variable
             name="myProfile"
-            type="com.example.androidtermproject.CalendarActivity.ProfileData" />
+            type="com.example.androidtermproject.viewmodel.CalendarActivity" />
         <variable
             name="friendsProfile"
-            type="List&lt;com.example.androidtermproject.CalendarActivity.ProfileData&gt;" />
+            type="com.example.androidtermproject.viewmodel.CalendarActivity" />
     </data>
 
     <LinearLayout

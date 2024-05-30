@@ -1,6 +1,6 @@
-package com.example.androidtermproject
+package com.example.androidtermproject.viewmodel
 
-import DrawerAdapter
+import com.example.androidtermproject.adapter.DrawerAdapter
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
@@ -12,7 +12,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.example.androidtermproject.R
 import com.example.androidtermproject.databinding.ActivityCalendarBinding
 import com.example.androidtermproject.databinding.CalendarDrawerLayoutBinding
 import com.example.androidtermproject.databinding.CalendarDrawerListBinding
@@ -29,7 +29,8 @@ class CalendarActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         toggle = ActionBarDrawerToggle(this, binding.drawer,
-            R.string.drawer_opened, R.string.drawer_closed)
+            R.string.drawer_opened, R.string.drawer_closed
+        )
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toggle.syncState()
 

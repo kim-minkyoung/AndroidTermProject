@@ -12,19 +12,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
         tools:targetApi="31">
-        <activity android:name=".CalendarActivity"/>
-        <activity android:name=".DiaryActivity"/>
-        <activity android:name=".MusicSearchActivity"/>
+        <activity android:name=".viewmodel.CalendarActivity"/>
+        <activity android:name=".viewmodel.DiaryActivity"/>
+        <activity android:name=".viewmodel.MusicSearchActivity"/>
         <activity
-            android:name=".LoginActivity"
+            android:name=".viewmodel.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CalendarActivity" />
-        <activity android:name=".ProfileActivity" />
+        <activity android:name=".viewmodel.ProfileActivity" />
     </application>
 
 </manifest>

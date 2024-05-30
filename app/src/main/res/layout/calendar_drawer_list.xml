@@ -4,7 +4,7 @@
     <data>
         <variable
             name="profile"
-            type="com.example.androidtermproject.CalendarActivity.ProfileData" />
+            type="com.example.androidtermproject.viewmodel.CalendarActivity.ProfileData" />
     </data>
 
     <Button

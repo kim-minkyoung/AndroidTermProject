@@ -1,4 +1,4 @@
-package com.example.androidtermproject
+package com.example.androidtermproject.mania_api
 // ApiClient.kt
 
 import retrofit2.Retrofit
