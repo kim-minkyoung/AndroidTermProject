@@ -17,6 +17,9 @@ import com.example.androidtermproject.adapter.DrawerAdapter
 import com.example.androidtermproject.databinding.ActivityCalendarBinding
 import com.example.androidtermproject.databinding.CalendarDrawerLayoutBinding
 import com.example.androidtermproject.databinding.CalendarDrawerListBinding
+import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 
 class CalendarActivity : AppCompatActivity() {
     private lateinit var toggle: ActionBarDrawerToggle
@@ -98,20 +101,33 @@ class CalendarActivity : AppCompatActivity() {
 
     private fun showWithdrawDialog() {
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("탈퇴")
-
-        val input = EditText(this)
-        input.maxLines = 5
-        input.hint = "탈퇴 사유 (100글자 제한)"
-        val lp = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.MATCH_PARENT
-        )
-        input.layoutParams = lp
-        builder.setView(input)
+        builder.setTitle("회원 탈퇴 안내")
+        builder.setMessage("이용해 주셔서 감사합니다. 회원 탈퇴는 영구적이며 복구할 수 없습니다. 저희 서비스를 이용해 주셨던 동안 진심으로 감사드립니다.")
 
         builder.setPositiveButton("탈퇴") { dialog, _ ->
-            val withdrawReason = input.text.toString()
+            // Firebase 사용자 가져오기
+            val user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
+
+            // Firebase 사용자 삭제
+            user?.delete()?.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // 사용자 삭제 성공
+                    Toast.makeText(this, "탈퇴 처리 완료되었습니다.", Toast.LENGTH_SHORT).show()
+
+                    // 로그아웃
+                    FirebaseAuth.getInstance().signOut()
+
+                    // 로그인 화면으로 이동
+                    val intent = Intent(this, LoginActivity::class.java)
+                    startActivity(intent)
+                    finish() // 현재 화면 종료
+                } else {
+                    // 사용자 삭제 실패
+                    val errorMessage = "탈퇴 처리 실패: ${task.exception?.message}"
+                    Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
+                }
+            }
+
             dialog.dismiss()
         }
         builder.setNegativeButton("취소", null)
