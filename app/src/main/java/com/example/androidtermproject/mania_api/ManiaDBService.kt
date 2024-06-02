@@ -1,5 +1,6 @@
 package com.example.androidtermproject.mania_api
 
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -13,5 +14,5 @@ interface ManiaDBService {
 //        @Query("display") display: Int = 10,
 //        @Query("key") key: String = "horse6953@naver.com",
 //        @Query("v") version: String = "0.5"
-    ): Call<List<Song>>
+    ): Call<ResponseBody>
 }
