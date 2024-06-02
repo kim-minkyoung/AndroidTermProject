@@ -27,6 +27,16 @@
         android:textColor="@color/white"
         android:layout_marginTop="16dp"/>
 
+    <EditText
+        android:id="@+id/profileNameEdit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="프로필 이름을 입력해 주세요"
+        android:textSize="16dp"
+        android:textColor="@color/blocked"
+        android:background="@drawable/edittext_background"
+        android:visibility="gone"/>
+
     <Space
         android:layout_width="wrap_content"
         android:layout_height="52dp"/>
@@ -54,7 +64,7 @@
         android:id="@+id/profileCommentEdit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="어쩌구 저쩌구"
+        android:text="comment를 작성해 주세요"
         android:textSize="16dp"
         android:textColor="@color/blocked"
         android:background="@drawable/edittext_background"
@@ -79,7 +89,7 @@
         android:id="@+id/profileContact"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="mooo_nk (instargram)"
+        android:text="hongGilDong (instagram)"
         android:textSize="16dp"
         android:textColor="@color/blocked"
         android:gravity="start|center"/>

@@ -4,8 +4,11 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.example.androidtermproject.databinding.ActivityProfileBinding
@@ -16,6 +19,7 @@ import java.util.*
 
 class ProfileActivity : AppCompatActivity() {
     private lateinit var binding: ActivityProfileBinding
+    private var nameBeforeEdit = ""
     private var commentBeforeEdit = ""
     private var contactBeforeEdit = ""
     private lateinit var auth: FirebaseAuth
@@ -24,6 +28,7 @@ class ProfileActivity : AppCompatActivity() {
 
     private val PICK_IMAGE_REQUEST = 71
     private var currentUserId: String = ""
+    private lateinit var pickImageLauncher: ActivityResultLauncher<Intent>
     private var imageUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,6 +42,22 @@ class ProfileActivity : AppCompatActivity() {
         db = FirebaseFirestore.getInstance()
         currentUserId = auth.currentUser?.uid ?: ""
 
+        // ActivityResultLauncher 초기화
+        pickImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+                val data: Intent? = result.data
+                if (data?.data != null) {
+                    imageUri = data.data
+                    binding.profileImageView.setImageURI(imageUri)
+                    saveProfileDetails(imageUri.toString())
+                } else {
+                    Toast.makeText(this, "Error getting selected file", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(this, "Image selection cancelled", Toast.LENGTH_SHORT).show()
+            }
+        }
+
         setupButtonListeners()
 
         supportActionBar?.apply {
@@ -44,9 +65,10 @@ class ProfileActivity : AppCompatActivity() {
             setDisplayHomeAsUpEnabled(true) // 뒤로가기 버튼 활성화
         }
 
-        val profileName = "John Doe"
-        binding.profileName.text = profileName
+//        val profileName = "John Doe"
+//        binding.profileName.text = profileName
 
+        nameBeforeEdit = binding.profileName.text.toString()
         commentBeforeEdit = binding.profileComment.text.toString()
         contactBeforeEdit = binding.profileContact.text.toString()
     }
@@ -66,10 +88,10 @@ class ProfileActivity : AppCompatActivity() {
         db.collection("users").document(currentUserId)
             .get()
             .addOnSuccessListener { document ->
-                val profileName = document.getString("name") ?: ""
+                val profileName = document.getString("profileName") ?: ""
                 val profileComment = document.getString("profileComment") ?: ""
                 val profileContact = document.getString("profileContact") ?: ""
-                val profileImageUrl = document.getString("profileImageUrl") ?: ""
+                val profileImageUrl = document.getString("profileImageUrl") ?: "@drawable/default_profile"
 
                 binding.profileName.text = profileName
                 binding.profileComment.text = profileComment
@@ -110,33 +132,14 @@ class ProfileActivity : AppCompatActivity() {
                 "Edit" -> {
                     switchEditMode(true)
                 }
-                "Cancel" -> {
-                    binding.profileCommentEdit.setText(commentBeforeEdit)
-                    binding.profileContactEdit.setText(contactBeforeEdit)
-
-                    switchEditMode(false)
-                }
             }
         }
 
         binding.profileImageView.setOnClickListener {
             if (binding.profileRightButton.text == "Save") {
-                val intent = Intent()
-                intent.type = "image/*"
-                intent.action = Intent.ACTION_GET_CONTENT
-                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST)
+                val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                pickImageLauncher.launch(intent)
             }
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
-            if (data == null || data.data == null) {
-                return
-            }
-            imageUri = data.data
-            binding.profileImageView.setImageURI(imageUri)
         }
     }
 
@@ -149,7 +152,7 @@ class ProfileActivity : AppCompatActivity() {
 
                 uploadTask.addOnSuccessListener {
                     ref.downloadUrl.addOnSuccessListener { uri ->
-                        saveImageUriToFirestore(uri.toString())
+                        saveProfileDetails(uri.toString())
                     }
                 }.addOnFailureListener { e ->
                     Toast.makeText(this, "Upload Failed: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -160,36 +163,12 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveImageUriToFirestore(imageUrl: String) {
-        val user = auth.currentUser
-        if (user != null) {
-            val userProfile = hashMapOf(
-                "profileImageUrl" to imageUrl,
-                "profileComment" to binding.profileCommentEdit.text.toString(),
-                "profileContact" to binding.profileContactEdit.text.toString()
-            )
-
-            db.collection("users").document(user.uid)
-                .set(userProfile)
-                .addOnSuccessListener {
-                    Toast.makeText(this, "Profile Updated", Toast.LENGTH_SHORT).show()
-                    binding.profileComment.text = binding.profileCommentEdit.text
-                    binding.profileContact.text = binding.profileContactEdit.text
-                    commentBeforeEdit = binding.profileComment.text.toString()
-                    contactBeforeEdit = binding.profileContact.text.toString()
-                    switchEditMode(false)
-                }
-                .addOnFailureListener { e ->
-                    Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                }
-        }
-    }
-
     private fun saveProfileDetails(imageUrl: String?) {
         val user = auth.currentUser
         if (user != null) {
             val userProfile = hashMapOf(
                 "profileImageUrl" to (imageUrl ?: ""),
+                "profileName" to binding.profileNameEdit.text.toString(),
                 "profileComment" to binding.profileCommentEdit.text.toString(),
                 "profileContact" to binding.profileContactEdit.text.toString()
             )
@@ -198,8 +177,10 @@ class ProfileActivity : AppCompatActivity() {
                 .set(userProfile)
                 .addOnSuccessListener {
                     Toast.makeText(this, "Profile Updated", Toast.LENGTH_SHORT).show()
+                    binding.profileName.text = binding.profileNameEdit.text
                     binding.profileComment.text = binding.profileCommentEdit.text
                     binding.profileContact.text = binding.profileContactEdit.text
+                    nameBeforeEdit = binding.profileName.text.toString()
                     commentBeforeEdit = binding.profileComment.text.toString()
                     contactBeforeEdit = binding.profileContact.text.toString()
                     switchEditMode(false)
@@ -212,17 +193,22 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun switchEditMode(isEditMode: Boolean) {
         if (isEditMode) {
+            binding.profileName.visibility = View.GONE
+            binding.profileNameEdit.visibility = View.VISIBLE
             binding.profileComment.visibility = View.GONE
             binding.profileCommentEdit.visibility = View.VISIBLE
             binding.profileContact.visibility = View.GONE
             binding.profileContactEdit.visibility = View.VISIBLE
 
+            binding.profileNameEdit.setText(binding.profileName.text)
             binding.profileCommentEdit.setText(binding.profileComment.text)
             binding.profileContactEdit.setText(binding.profileContact.text)
 
             binding.profileLeftButton.text = "Cancel"
             binding.profileRightButton.text = "Save"
         } else {
+            binding.profileName.visibility = View.VISIBLE
+            binding.profileNameEdit.visibility = View.GONE
             binding.profileComment.visibility = View.VISIBLE
             binding.profileCommentEdit.visibility = View.GONE
             binding.profileContact.visibility = View.VISIBLE
