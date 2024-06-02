@@ -1,5 +1,6 @@
 package com.example.androidtermproject.viewmodel
 
+import MusicAdapter
 import MusicResponse
 import android.os.Bundle
 import android.util.Log
@@ -13,8 +14,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.androidtermproject.R
-import com.example.androidtermproject.adapter.MusicAdapter
 import com.example.androidtermproject.mania_api.ApiClient
+import com.example.androidtermproject.mania_api.MusicItem
 import com.example.androidtermproject.mania_api.Song
 import com.google.gson.Gson
 import okhttp3.ResponseBody
@@ -45,23 +46,34 @@ class MusicSearchActivity : AppCompatActivity() {
         searchEditText = findViewById(R.id.searchEditText)
         searchButton = findViewById(R.id.searchButton)
         recyclerView = findViewById(R.id.recyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this)
 
-        musicAdapter = MusicAdapter()
+        val musicItems = listOf(
+            MusicItem("", "", "album_image_url_1"),
+            MusicItem("", "", "album_image_url_2"),
+            MusicItem("", "", "album_image_url_2"),
+            MusicItem("", "", "album_image_url_2"),
+            MusicItem("", "", "album_image_url_2"),
+            MusicItem("", "", "album_image_url_2"),
+            // 추가적인 음악 항목들을 여기에 추가할 수 있습니다.
+        )
+
+        musicAdapter = MusicAdapter(musicItems)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = musicAdapter
 
         searchButton.setOnClickListener {
             val query = searchEditText.text.toString()
             if (query.isNotEmpty()) {
-                searchSongs()
+                searchSongs(query)
             } else {
                 Toast.makeText(this, "Please enter a search term", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun searchSongs() {
-        ApiClient.instance.searchSongs().enqueue(object : Callback<ResponseBody> {
+    private fun searchSongs(query:String){
+        ApiClient.instance.searchSongs(query).enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
                     val responseBody = response.body()?.string()
@@ -71,14 +83,14 @@ class MusicSearchActivity : AppCompatActivity() {
                         if (musicResponse != null) {
                             val items = musicResponse.channel?.items
                             if (items != null && items.isNotEmpty()) {
-                                val firstItem = items[0]
-                                val title = firstItem.title ?: ""
-                                val description = firstItem.description ?: ""
-                                val albumTitle = firstItem.album?.title ?: ""
-                                val albumImage = firstItem.album?.image ?: ""
-                                val artistName = firstItem.artist?.name ?: ""
-                                // 화면에 데이터 표시
-                                displayMusicInfo(title, description, albumTitle, albumImage, artistName)
+                                val musicItemList = items.map { item ->
+                                    MusicItem(
+                                        title = item.title ?: "",
+                                        artist = item.artist?.name ?: "",
+                                        albumImage = item.album?.image ?: ""
+                                    )
+                                }
+                                displayMusicInfo(musicItemList)
                             } else {
                                 Toast.makeText(this@MusicSearchActivity, "No songs found", Toast.LENGTH_SHORT).show()
                             }
@@ -97,6 +109,11 @@ class MusicSearchActivity : AppCompatActivity() {
                 Toast.makeText(this@MusicSearchActivity, "Failed to fetch data", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    private fun displayMusicInfo(musicItemList: List<MusicItem>) {
+        musicAdapter = MusicAdapter(musicItemList)
+        recyclerView.adapter = musicAdapter
     }
 
     private fun parseXmlMusicResponse(xmlString: String): MusicResponse? {

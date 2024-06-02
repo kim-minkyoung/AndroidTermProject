@@ -1,46 +1,33 @@
-// MusicAdapter.kt
-package com.example.androidtermproject.adapter
-
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.androidtermproject.R
-import com.example.androidtermproject.mania_api.Song
+import com.example.androidtermproject.mania_api.MusicItem
+class MusicAdapter(private val items: List<MusicItem>) : RecyclerView.Adapter<MusicAdapter.ViewHolder>() {
 
-class MusicAdapter : RecyclerView.Adapter<MusicAdapter.MusicViewHolder>() {
-
-    private var songs: List<Song> = listOf()
-    var onSongSelected: ((Song) -> Unit)? = null
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MusicViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_song, parent, false)
-        return MusicViewHolder(view)
+        return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: MusicViewHolder, position: Int) {
-        val song = songs[position]
-        holder.bind(song)
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val item = items[position]
+        holder.bind(item)
     }
 
-    override fun getItemCount(): Int = songs.size
-
-    fun updateSongs(newSongs: List<Song>) {
-        songs = newSongs
-        notifyDataSetChanged()
+    override fun getItemCount(): Int {
+        return items.size
     }
 
-    inner class MusicViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val titleTextView: TextView = itemView.findViewById(R.id.songTitleTextView)
-        private val artistTextView: TextView = itemView.findViewById(R.id.songArtistTextView)
-
-        fun bind(song: Song) {
-            titleTextView.text = song.title
-            artistTextView.text = song.artist
-            itemView.setOnClickListener {
-                onSongSelected?.invoke(song)
-            }
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        fun bind(item: MusicItem) {
+            itemView.findViewById<TextView>(R.id.songTitleTextView).text = item.title
+            itemView.findViewById<TextView>(R.id.songArtistTextView).text = item.artist
+            Glide.with(itemView.context).load(item.albumImage).into(itemView.findViewById<ImageView>(R.id.songImageView))
         }
     }
 }

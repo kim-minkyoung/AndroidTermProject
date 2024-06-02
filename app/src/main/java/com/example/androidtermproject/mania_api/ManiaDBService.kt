@@ -7,9 +7,9 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ManiaDBService {
-    @GET("api/search/fire/?sr=song&display=1&key=horse6953@naver.com&v=0.5")
+    @GET("api/search/{song}}/?sr=song&display=5&key=horse6953@naver.com&v=0.5")
     fun searchSongs(
-//        @Path("song") song: String,
+        @Path("song") song: String,
 //        @Query("sr") sr: String = "song",
 //        @Query("display") display: Int = 10,
 //        @Query("key") key: String = "horse6953@naver.com",
