@@ -1,7 +1,5 @@
 package com.example.androidtermproject.mania_api
 
-// Song.kt
-
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 

@@ -1,5 +1,5 @@
-package com.example.androidtermproject.adapter
 // MusicAdapter.kt
+package com.example.androidtermproject.adapter
 
 import android.view.LayoutInflater
 import android.view.View
