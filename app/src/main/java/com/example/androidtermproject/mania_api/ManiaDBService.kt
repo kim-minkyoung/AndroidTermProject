@@ -10,9 +10,5 @@ interface ManiaDBService {
     @GET("api/search/{song}}/?sr=song&display=5&key=horse6953@naver.com&v=0.5")
     fun searchSongs(
         @Path("song") song: String,
-//        @Query("sr") sr: String = "song",
-//        @Query("display") display: Int = 10,
-//        @Query("key") key: String = "horse6953@naver.com",
-//        @Query("v") version: String = "0.5"
     ): Call<ResponseBody>
 }

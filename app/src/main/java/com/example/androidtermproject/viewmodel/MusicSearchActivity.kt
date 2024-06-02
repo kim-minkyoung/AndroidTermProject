@@ -16,7 +16,6 @@ import com.bumptech.glide.Glide
 import com.example.androidtermproject.R
 import com.example.androidtermproject.mania_api.ApiClient
 import com.example.androidtermproject.mania_api.MusicItem
-import com.example.androidtermproject.mania_api.Song
 import com.google.gson.Gson
 import okhttp3.ResponseBody
 import org.simpleframework.xml.core.Persister
@@ -51,11 +50,9 @@ class MusicSearchActivity : AppCompatActivity() {
         val musicItems = listOf(
             MusicItem("", "", "album_image_url_1"),
             MusicItem("", "", "album_image_url_2"),
-            MusicItem("", "", "album_image_url_2"),
-            MusicItem("", "", "album_image_url_2"),
-            MusicItem("", "", "album_image_url_2"),
-            MusicItem("", "", "album_image_url_2"),
-            // 추가적인 음악 항목들을 여기에 추가할 수 있습니다.
+            MusicItem("", "", "album_image_url_3"),
+            MusicItem("", "", "album_image_url_4"),
+            MusicItem("", "", "album_image_url_5"),
         )
 
         musicAdapter = MusicAdapter(musicItems)
@@ -126,26 +123,6 @@ class MusicSearchActivity : AppCompatActivity() {
             Log.e("MusicSearchActivity", "Failed to parse XML: ${e.message}", e)
             null
         }
-    }
-
-    private fun displayMusicInfo(
-        title: String,
-        description: String,
-        albumTitle: String,
-        albumImage: String,
-        artistName: String
-    ) {
-        // 화면에 표시할 뷰들을 가져옵니다.
-        val songTitleTextView = findViewById<TextView>(R.id.songTitleTextView)
-        val songArtistTextView = findViewById<TextView>(R.id.songArtistTextView)
-        val albumImageView = findViewById<ImageView>(R.id.songImageView)
-
-        // 노래 제목, 아티스트 텍스트뷰에 데이터 설정
-        songTitleTextView.text = title
-        songArtistTextView.text = artistName
-
-        // 앨범 이미지 설정 (Glide 등의 라이브러리를 사용하여 이미지 로드)
-        Glide.with(this).load(albumImage).into(albumImageView)
     }
 
     override fun onSupportNavigateUp(): Boolean {
