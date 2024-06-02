@@ -19,9 +19,12 @@ import com.example.androidtermproject.mania_api.Song
 import com.google.gson.Gson
 import okhttp3.ResponseBody
 import org.simpleframework.xml.core.Persister
+import org.xml.sax.InputSource
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.StringReader
+import javax.xml.parsers.DocumentBuilderFactory
 
 class MusicSearchActivity : AppCompatActivity() {
 
@@ -64,20 +67,22 @@ class MusicSearchActivity : AppCompatActivity() {
                     val responseBody = response.body()?.string()
                     if (responseBody != null) {
                         val musicResponse = parseXmlMusicResponse(responseBody)
+                        println("응답인 " + musicResponse.toString())
                         if (musicResponse != null) {
-                            val item = musicResponse.channel?.item
-                            if (item != null) {
-                                // 필요한 데이터 추출
-                                val title = item.title ?: ""
-                                val description = item.description ?: ""
-                                val albumTitle = item.album?.title ?: ""
-                                val albumImage = item.album?.image ?: ""
-                                val artistName = item.artist?.name ?: ""
+                            val items = musicResponse.channel?.items
+                            if (items != null && items.isNotEmpty()) {
+                                val firstItem = items[0]
+                                val title = firstItem.title ?: ""
+                                val description = firstItem.description ?: ""
+                                val albumTitle = firstItem.album?.title ?: ""
+                                val albumImage = firstItem.album?.image ?: ""
+                                val artistName = firstItem.artist?.name ?: ""
                                 // 화면에 데이터 표시
                                 displayMusicInfo(title, description, albumTitle, albumImage, artistName)
                             } else {
                                 Toast.makeText(this@MusicSearchActivity, "No songs found", Toast.LENGTH_SHORT).show()
                             }
+
                         }
                     } else {
                         Toast.makeText(this@MusicSearchActivity, "Response body is empty", Toast.LENGTH_SHORT).show()
@@ -95,8 +100,10 @@ class MusicSearchActivity : AppCompatActivity() {
     }
 
     private fun parseXmlMusicResponse(xmlString: String): MusicResponse? {
+        println("출력 잘되니? " + xmlString)
         val serializer = Persister()
         return try {
+
             serializer.read(MusicResponse::class.java, xmlString)
         } catch (e: Exception) {
             Log.e("MusicSearchActivity", "Failed to parse XML: ${e.message}", e)
