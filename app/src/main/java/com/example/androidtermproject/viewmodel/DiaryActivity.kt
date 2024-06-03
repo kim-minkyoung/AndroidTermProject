@@ -7,13 +7,17 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.GlideException
 import com.example.androidtermproject.R
 import com.example.androidtermproject.databinding.ActivityDiaryBinding
 import com.example.androidtermproject.databinding.ActivityProfileBinding
+import com.example.androidtermproject.mania_api.MusicItem
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -24,11 +28,12 @@ import java.util.Locale
 class DiaryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDiaryBinding
     private lateinit var db: FirebaseFirestore
-
     private lateinit var auth: FirebaseAuth
     private var currentUserId: String = ""
     private lateinit var selectedDate: String
     private var diaryBeforeEdit = ""
+    private lateinit var selectedMusic: MusicItem // 음악 정보를 저장할 변수 추가
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +47,14 @@ class DiaryActivity : AppCompatActivity() {
 
         // 인텐트로부터 선택된 날짜를 가져옴
         selectedDate = intent.getStringExtra("selectedDate") ?: ""
+        selectedMusic = intent.getSerializableExtra("selectedMusic") as? MusicItem ?: MusicItem("No Music","Artist - ","")
+
+        val musicTitle = findViewById<TextView>(R.id.musicTitle)
+        val musicArtist = findViewById<TextView>(R.id.musicArtist)
+        val musicImage = findViewById<ImageView>(R.id.musicImage)
+        musicTitle.text = selectedMusic.title
+        musicArtist.text = selectedMusic.artist
+        Glide.with(this).load(selectedMusic.albumImage).error(R.drawable.default_music_img).into(musicImage)
 
         // TODO
         // selectedDate가 빈 문자열인 경우 오늘 날짜로 설정
@@ -49,7 +62,6 @@ class DiaryActivity : AppCompatActivity() {
             val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             selectedDate = sdf.format(Date())
         }
-
         supportActionBar?.apply {
             title = "Diary"
             setDisplayHomeAsUpEnabled(true) // 뒤로가기 버튼 활성화
@@ -88,6 +100,7 @@ class DiaryActivity : AppCompatActivity() {
     }
 
     private fun setupButtonListeners() {
+        binding.diaryText.text = selectedMusic.title
 
         binding.musicSearchFooterButton.setOnClickListener {
             val intent = Intent(this, MusicSearchActivity::class.java)
@@ -118,7 +131,9 @@ class DiaryActivity : AppCompatActivity() {
         val user = auth.currentUser
         if (user != null) {
             val diaryEntry = mapOf(
-                "diaryText" to binding.diaryTextEdit.text.toString()
+                "diaryText" to binding.diaryTextEdit.text.toString(),
+                "selectedMusic" to selectedMusic.title // 음악 정보를 저장
+
             )
 
             db.collection("users").document(user.uid)

@@ -4,8 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Button
-import android.widget.EditText
-import android.widget.LinearLayout
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -16,7 +14,6 @@ import com.example.androidtermproject.R
 import com.example.androidtermproject.adapter.DrawerAdapter
 import com.example.androidtermproject.databinding.ActivityCalendarBinding
 import com.example.androidtermproject.databinding.CalendarDrawerLayoutBinding
-import com.example.androidtermproject.databinding.CalendarDrawerListBinding
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -26,13 +23,13 @@ import java.util.Locale
 
 class CalendarActivity : AppCompatActivity() {
     private lateinit var toggle: ActionBarDrawerToggle
-    private lateinit var binding: ActivityCalendarBinding // 이 줄 추가
+    private lateinit var binding: ActivityCalendarBinding
     private lateinit var drawerBinding: CalendarDrawerLayoutBinding
-    private lateinit var selectedDate: String
+    private var selectedDate: String? = null // nullable로 변경
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityCalendarBinding.inflate(layoutInflater) // 이 줄 추가
+        binding = ActivityCalendarBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val fromProfile = intent.getBooleanExtra("FROM_PROFILE", false)
@@ -54,10 +51,14 @@ class CalendarActivity : AppCompatActivity() {
             println("Selected date: $selectedDate")
         }
 
-        val moveToDiaryButton = binding.root.findViewById<Button>(R.id.moveToDiaryButton)// 예시: 날짜 선택 (여기서는 고정된 날짜를 사용, 실제 구현에서는 DatePicker 등을 사용)
+        val moveToDiaryButton = binding.root.findViewById<Button>(R.id.moveToDiaryButton)
         moveToDiaryButton.text = "Move to Diary"
         moveToDiaryButton.setOnClickListener {
-            openDiaryActivity(selectedDate)
+            if (selectedDate != null) {
+                openDiaryActivity(selectedDate!!)
+            } else {
+                Toast.makeText(this, "날짜를 선택하세요", Toast.LENGTH_SHORT).show() // 사용자에게 날짜를 선택하라고 알림
+            }
         }
     }
 
@@ -173,7 +174,7 @@ class CalendarActivity : AppCompatActivity() {
                 return true
             }
         } else {
-            if (toggle.onOptionsItemSelected(item)) return true // 이 줄 수정
+            if (toggle.onOptionsItemSelected(item)) return true
         }
         return super.onOptionsItemSelected(item)
     }

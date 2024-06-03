@@ -10,7 +10,10 @@ import com.bumptech.glide.Glide
 import com.example.androidtermproject.R
 import com.example.androidtermproject.mania_api.MusicItem
 
-class MusicAdapter(private val items: List<MusicItem>) : RecyclerView.Adapter<MusicAdapter.ViewHolder>() {
+class MusicAdapter(
+    private val items: List<MusicItem>,
+    private val onItemClick: (MusicItem) -> Unit // 클릭 콜백 추가
+) : RecyclerView.Adapter<MusicAdapter.ViewHolder>() {
 
     private var selectedItemPosition: Int = RecyclerView.NO_POSITION
     private lateinit var recyclerView: RecyclerView
@@ -53,8 +56,10 @@ class MusicAdapter(private val items: List<MusicItem>) : RecyclerView.Adapter<Mu
 
                     itemView.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.purplePoint)) // 보라색으로 배경색 변경
                     selectedItemPosition = adapterPosition
+                    onItemClick(item) // 아이템 클릭 콜백 호출
                 }
             }
+
             if (selectedItemPosition == position) {
                 itemView.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.purplePoint)) // 보라색으로 배경색 변경
             } else {
