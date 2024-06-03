@@ -119,7 +119,11 @@ class CalendarActivity : AppCompatActivity() {
         val builder = AlertDialog.Builder(this)
         builder.setMessage("로그아웃 하시겠습니까?")
         builder.setPositiveButton("로그아웃") { dialog, _ ->
-            dialog.dismiss()
+            FirebaseAuth.getInstance().signOut()
+            // 로그아웃 후 로그인 화면으로 이동
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish() // 현재 액티비티를 종료합니다.
         }
         builder.setNegativeButton("취소", null)
         builder.show()
