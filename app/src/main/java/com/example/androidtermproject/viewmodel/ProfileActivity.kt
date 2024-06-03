@@ -84,6 +84,14 @@ class ProfileActivity : AppCompatActivity() {
         return true
     }
 
+    private fun setDefaultProfileName() {
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user != null) {
+            val profileName = user.email ?: ""
+            binding.profileName.text = profileName
+        }
+    }
+
     private fun loadProfileData() {
         // Load profile data from Firestore and display it in UI
         db.collection("users").document(currentUserId)
@@ -110,14 +118,16 @@ class ProfileActivity : AppCompatActivity() {
                         .into(binding.profileImageView)
                 }
 
+                if (profileName.isEmpty()) {
+                    setDefaultProfileName()
+                }
+
                 switchEditMode(false)
             }
             .addOnFailureListener { exception ->
                 Toast.makeText(this, "Failed to load profile data: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
     }
-
-
 
     private fun setupButtonListeners() {
         binding.profileLeftButton.setOnClickListener {
@@ -134,6 +144,7 @@ class ProfileActivity : AppCompatActivity() {
             when (binding.profileRightButton.text) {
                 "Save" -> {
                     saveProfile()
+                    setDefaultProfileName()
                 }
                 "Edit" -> {
                     switchEditMode(true)
@@ -152,6 +163,12 @@ class ProfileActivity : AppCompatActivity() {
     private fun saveProfile() {
         val user = auth.currentUser
         if (user != null) {
+            val enteredName = binding.profileNameEdit.text.trim().toString()
+            if (enteredName.isBlank()) {
+                Toast.makeText(this, "이름을 입력해 주세요", Toast.LENGTH_SHORT).show()
+                return // 이름이 입력되지 않았으면 함수 종료
+            }
+
             if (imageUri != null) {
                 val ref = storage.reference.child("profileImages/${user.uid}")
                 val uploadTask = ref.putFile(imageUri!!)

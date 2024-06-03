@@ -123,7 +123,7 @@ class CalendarActivity : AppCompatActivity() {
             // 로그아웃 후 로그인 화면으로 이동
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
-            finish() // 현재 액티비티를 종료합니다.
+            finish() // 현재 액티비티를 종료
         }
         builder.setNegativeButton("취소", null)
         builder.show()
