@@ -166,7 +166,7 @@ class ProfileActivity : AppCompatActivity() {
     private fun saveProfileDetails(imageUrl: String?) {
         val user = auth.currentUser
         if (user != null) {
-            val userProfile = hashMapOf(
+            val userProfile = mapOf(
                 "profileImageUrl" to (imageUrl ?: ""),
                 "profileName" to binding.profileNameEdit.text.toString(),
                 "profileComment" to binding.profileCommentEdit.text.toString(),
@@ -174,7 +174,7 @@ class ProfileActivity : AppCompatActivity() {
             )
 
             db.collection("users").document(user.uid)
-                .set(userProfile)
+                .update(userProfile)
                 .addOnSuccessListener {
                     Toast.makeText(this, "Profile Updated", Toast.LENGTH_SHORT).show()
                     binding.profileName.text = binding.profileNameEdit.text

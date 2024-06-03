@@ -19,8 +19,8 @@
             android:layout_width="wrap_content"
             android:layout_height="36dp"
             android:text="Delete"
-            android:id="@+id/deleteButton"
-            android:background="@drawable/button_blocked_radious"
+            android:id="@+id/diaryLeftButton"
+            android:background="@drawable/button_black_radious"
             android:textColor="@color/white"
             android:layout_marginEnd="8dp" />
 
@@ -28,9 +28,9 @@
             android:layout_width="wrap_content"
             android:layout_height="36dp"
             android:text="Edit"
-            android:id="@+id/editButton"
+            android:id="@+id/diaryRightButton"
             android:textColor="@color/white"
-            android:background="@drawable/button_blocked_radious"/>
+            android:background="@drawable/button_purple_radious"/>
     </LinearLayout>
 
     <!-- Diary Header -->
@@ -79,7 +79,7 @@
         android:padding="16dp">
 
         <TextView
-            android:id="@+id/diaryTextView"
+            android:id="@+id/diaryText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@android:color/transparent"
@@ -104,8 +104,28 @@
 
     </LinearLayout>
 
-    <include layout="@layout/footer_button"
-        android:id="@+id/music_search_footer_button"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/light_background"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="16dp"
+        android:id="@+id/footer_button"
+        android:gravity="center">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/avatar_diary"
+            android:layout_marginEnd="16dp"/>
+
+        <Button
+            android:id="@+id/music_search_footer_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_black_radious"
+            android:text="Text"
+            android:textColor="@color/white" />
+    </LinearLayout>
 
 
 </LinearLayout>
