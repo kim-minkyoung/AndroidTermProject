@@ -11,6 +11,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.example.androidtermproject.R
 import com.example.androidtermproject.databinding.ActivityProfileBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -86,11 +87,12 @@ class ProfileActivity : AppCompatActivity() {
     private fun loadProfileData() {
         // Load profile data from Firestore and display it in UI
         db.collection("users").document(currentUserId)
+            .collection("profile").document("profileData")
             .get()
             .addOnSuccessListener { document ->
-                val profileName = document.getString("profileName") ?: ""
-                val profileComment = document.getString("profileComment") ?: ""
-                val profileContact = document.getString("profileContact") ?: ""
+                val profileName = document.getString("profileName") ?: "write your name"
+                val profileComment = document.getString("profileComment") ?: "ex) I love listening music"
+                val profileContact = document.getString("profileContact") ?: "ex) hongGilDong (instagram)"
                 val profileImageUrl = document.getString("profileImageUrl") ?: "@drawable/default_profile"
 
                 binding.profileName.text = profileName
@@ -98,9 +100,13 @@ class ProfileActivity : AppCompatActivity() {
                 binding.profileContact.text = profileContact
 
                 // Load profile image
-                if (profileImageUrl.isNotEmpty()) {
+                if (profileImageUrl.isNotEmpty() && profileImageUrl != "@drawable/default_profile") {
                     Glide.with(this)
                         .load(profileImageUrl)
+                        .into(binding.profileImageView)
+                } else {
+                    Glide.with(this)
+                        .load(R.drawable.default_profile)
                         .into(binding.profileImageView)
                 }
 
@@ -174,7 +180,8 @@ class ProfileActivity : AppCompatActivity() {
             )
 
             db.collection("users").document(user.uid)
-                .update(userProfile)
+                .collection("profile").document("profileData")
+                .set(userProfile)
                 .addOnSuccessListener {
                     Toast.makeText(this, "Profile Updated", Toast.LENGTH_SHORT).show()
                     binding.profileName.text = binding.profileNameEdit.text

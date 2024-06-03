@@ -20,12 +20,15 @@ import com.example.androidtermproject.databinding.CalendarDrawerListBinding
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class CalendarActivity : AppCompatActivity() {
     private lateinit var toggle: ActionBarDrawerToggle
     private lateinit var binding: ActivityCalendarBinding // 이 줄 추가
     private lateinit var drawerBinding: CalendarDrawerLayoutBinding
-    private lateinit var drawerListBinding: CalendarDrawerListBinding
+    private lateinit var selectedDate: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,12 +45,35 @@ class CalendarActivity : AppCompatActivity() {
             setupDrawer()
         }
 
-        val moveToDiaryButton = binding.root.findViewById<Button>(R.id.moveToDiaryButton)
+        // CalendarView에 날짜 선택 리스너 설정
+        binding.calendarView.setOnDateChangeListener { view, year, month, dayOfMonth ->
+            // 선택된 날짜를 "yyyy-MM-dd" 형식의 문자열로 변환
+            selectedDate = formatDate(year, month + 1, dayOfMonth)
+
+            // 선택된 날짜 확인 (로그 또는 토스트 메시지로 확인)
+            println("Selected date: $selectedDate")
+        }
+
+        val moveToDiaryButton = binding.root.findViewById<Button>(R.id.moveToDiaryButton)// 예시: 날짜 선택 (여기서는 고정된 날짜를 사용, 실제 구현에서는 DatePicker 등을 사용)
         moveToDiaryButton.text = "Move to Diary"
         moveToDiaryButton.setOnClickListener {
-            val intent = Intent(this, DiaryActivity::class.java)
-            startActivity(intent)
+            openDiaryActivity(selectedDate)
         }
+    }
+
+    // 날짜를 "yyyy-MM-dd" 형식의 문자열로 변환하는 함수
+    private fun formatDate(year: Int, month: Int, dayOfMonth: Int): String {
+        val calendar = Calendar.getInstance()
+        calendar.set(year, month - 1, dayOfMonth) // month는 0부터 시작하므로 -1 해줌
+
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        return sdf.format(calendar.time)
+    }
+
+    private fun openDiaryActivity(selectedDate: String) {
+        val intent = Intent(this, DiaryActivity::class.java)
+        intent.putExtra("selectedDate", selectedDate)
+        startActivity(intent)
     }
 
     private fun setupDrawer() {

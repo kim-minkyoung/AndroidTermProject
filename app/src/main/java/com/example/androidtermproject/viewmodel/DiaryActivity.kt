@@ -1,11 +1,14 @@
 package com.example.androidtermproject.viewmodel
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.example.androidtermproject.R
@@ -14,6 +17,9 @@ import com.example.androidtermproject.databinding.ActivityProfileBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class DiaryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDiaryBinding
@@ -21,6 +27,7 @@ class DiaryActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private var currentUserId: String = ""
+    private lateinit var selectedDate: String
     private var diaryBeforeEdit = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,19 +40,25 @@ class DiaryActivity : AppCompatActivity() {
         db = FirebaseFirestore.getInstance()
         currentUserId = auth.currentUser?.uid ?: ""
 
+        // 인텐트로부터 선택된 날짜를 가져옴
+        selectedDate = intent.getStringExtra("selectedDate") ?: ""
+
+        // TODO
+        // selectedDate가 빈 문자열인 경우 오늘 날짜로 설정
+        if (selectedDate.isEmpty()) {
+            val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            selectedDate = sdf.format(Date())
+        }
+
         supportActionBar?.apply {
             title = "Diary"
             setDisplayHomeAsUpEnabled(true) // 뒤로가기 버튼 활성화
         }
 
         setupButtonListeners()
+        loadDiaryData(selectedDate)
 
         diaryBeforeEdit = binding.diaryText.text.toString()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        loadDiaryData()
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -53,38 +66,46 @@ class DiaryActivity : AppCompatActivity() {
         return true
     }
 
-    private fun loadDiaryData() {
-        // Load profile data from Firestore and display it in UI
-        db.collection("users").document(currentUserId)
-            .get()
-            .addOnSuccessListener { document ->
-                val diaryText = document.getString("diaryText") ?: ""
-
-                binding.diaryText.text = diaryText
-
-                switchEditMode(false)
-            }
-            .addOnFailureListener { exception ->
-                Toast.makeText(this, "Failed to load diary data: ${exception.message}", Toast.LENGTH_SHORT).show()
-            }
+    private fun loadDiaryData(date: String) {
+        val user = auth.currentUser
+        if (user != null) {
+            db.collection("users").document(user.uid)
+                .collection("diaries").document(date)
+                .get()
+                .addOnSuccessListener { document ->
+                    val diaryText = document.getString("diaryText") ?: ""
+                    binding.diaryText.text = diaryText
+                    switchEditMode(false)
+                }
+                .addOnFailureListener { exception ->
+                    Toast.makeText(this, "Failed to load diary data: ${exception.message}", Toast.LENGTH_SHORT).show()
+                    Log.d("DiaryActivity", "Failed to load diary data: ${exception.message}")
+                }
+        }
+        else {
+            Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun setupButtonListeners() {
+
+        binding.musicSearchFooterButton.setOnClickListener {
+            val intent = Intent(this, MusicSearchActivity::class.java)
+            startActivity(intent)
+        }
 
         binding.diaryLeftButton.setOnClickListener {
             if (binding.diaryText.visibility == View.GONE) {
                 switchEditMode(false)
             } else {
-//                val intent = Intent(this, CalendarActivity::class.java)
-//                intent.putExtra("FROM_PROFILE", true)
-//                startActivity(intent)
+                showDeleteConfirmationDialog(selectedDate)
             }
         }
 
         binding.diaryRightButton.setOnClickListener {
             when (binding.diaryRightButton.text) {
                 "Save" -> {
-                    saveDiary()
+                    saveDiary(selectedDate)
                 }
                 "Edit" -> {
                     switchEditMode(true)
@@ -93,20 +114,48 @@ class DiaryActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveDiary() {
+    private fun saveDiary(date: String) {
         val user = auth.currentUser
         if (user != null) {
-            val userDiary = mapOf(
+            val diaryEntry = mapOf(
                 "diaryText" to binding.diaryTextEdit.text.toString()
             )
 
             db.collection("users").document(user.uid)
-                .update(userDiary)
+                .collection("diaries").document(date)
+                .set(diaryEntry)
                 .addOnSuccessListener {
                     Toast.makeText(this, "Diary Updated", Toast.LENGTH_SHORT).show()
                     binding.diaryText.text = binding.diaryTextEdit.text
-                    diaryBeforeEdit = binding.diaryText.text.toString()
                     switchEditMode(false)
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+        }
+    }
+
+    private fun showDeleteConfirmationDialog(date: String) {
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage("${date}의 다이어리를 삭제하시겠습니까?")
+            .setPositiveButton("예", DialogInterface.OnClickListener { dialog, id ->
+                deleteDiaryData(date)
+            })
+            .setNegativeButton("아니요", DialogInterface.OnClickListener { dialog, id ->
+                dialog.dismiss()
+            })
+        builder.create().show()
+    }
+
+    private fun deleteDiaryData(date: String) {
+        val user = auth.currentUser
+        if (user != null) {
+            db.collection("users").document(user.uid)
+                .collection("diaries").document(date)
+                .delete()
+                .addOnSuccessListener {
+                    Toast.makeText(this, "${date} Diary deleted", Toast.LENGTH_SHORT).show()
+                    binding.diaryText.text = ""
                 }
                 .addOnFailureListener { e ->
                     Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -127,7 +176,7 @@ class DiaryActivity : AppCompatActivity() {
             binding.diaryTextEdit.visibility = View.GONE
             binding.diaryTextEdit.setText(binding.diaryText.text)
 
-            binding.diaryLeftButton.text = "Cancel"
+            binding.diaryLeftButton.text = "Delete"
             binding.diaryRightButton.text = "Edit"
         }
     }
