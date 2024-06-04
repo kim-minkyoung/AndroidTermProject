@@ -75,7 +75,7 @@ class FindOtherActivity : AppCompatActivity() {
                                 val musicArtist = diaryDocument.getString("musicArtist")
 
                                 if (musicTitle == selectedMusic.title && musicArtist == selectedMusic.artist) {
-//                                    val userName = userDocument.id
+                                    val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
                                     val profileRef = userDocument.reference.collection("profile")
 
                                     profileRef.get()
@@ -88,15 +88,32 @@ class FindOtherActivity : AppCompatActivity() {
 
                                             // 프로필 서브컬렉션에 있는 문서를 반복하여 처리
                                             for (profileDocument in profileSnapshot.documents) {
-                                                // 프로필 문서에서 원하는 필드 가져오기
-                                                val userName = profileDocument.getString("profileName") ?: ""
-                                                val userComment = profileDocument.getString("profileComment") ?: ""
-                                                val userContact = profileDocument.getString("profileContact") ?: ""
-                                                val subTitle = "comment: ${userComment}\ncontact: ${userContact}"
-                                                val profileImage = profileDocument.getString("profileImageUrl") ?: "https://via.placeholder.com/150"
+                                                if (userDocument.id != currentUserUid) {
+                                                    // 프로필 문서에서 원하는 필드 가져오기
+                                                    val userName =
+                                                        profileDocument.getString("profileName")
+                                                            ?: ""
+                                                    val userComment =
+                                                        profileDocument.getString("profileComment")
+                                                            ?: ""
+                                                    val userContact =
+                                                        profileDocument.getString("profileContact")
+                                                            ?: ""
+                                                    val subTitle =
+                                                        "comment: ${userComment}\ncontact: ${userContact}"
+                                                    val profileImage =
+                                                        profileDocument.getString("profileImageUrl")
+                                                            ?: "https://via.placeholder.com/150"
 
-                                                // 가져온 값으로 MusicBuddy 객체 생성하여 리스트에 추가
-                                                musicBuddyList.add(MusicBuddy(userName, subTitle, profileImage))
+                                                    // 가져온 값으로 MusicBuddy 객체 생성하여 리스트에 추가
+                                                    musicBuddyList.add(
+                                                        MusicBuddy(
+                                                            userName,
+                                                            subTitle,
+                                                            profileImage
+                                                        )
+                                                    )
+                                                }
                                             }
 
                                             // RecyclerView 업데이트
