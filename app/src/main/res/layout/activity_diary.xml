@@ -114,11 +114,6 @@
         android:paddingVertical="16dp"
         android:id="@+id/footer_button"
         android:gravity="center">
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/avatar_diary"
-            android:layout_marginEnd="16dp"/>
 
         <Button
             android:id="@+id/music_search_footer_button"

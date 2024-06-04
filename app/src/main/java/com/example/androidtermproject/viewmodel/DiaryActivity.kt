@@ -226,6 +226,9 @@ class DiaryActivity : AppCompatActivity() {
 
             binding.diaryLeftButton.text = "Cancel"
             binding.diaryRightButton.text = "Save"
+            binding.footerButton.visibility = View.GONE
+
+
         } else {
             binding.diaryText.visibility = View.VISIBLE
             binding.diaryTextEdit.visibility = View.GONE
@@ -233,6 +236,8 @@ class DiaryActivity : AppCompatActivity() {
 
             binding.diaryLeftButton.text = "Delete"
             binding.diaryRightButton.text = "Edit"
+            binding.footerButton.visibility = View.VISIBLE
+
         }
     }
 }
