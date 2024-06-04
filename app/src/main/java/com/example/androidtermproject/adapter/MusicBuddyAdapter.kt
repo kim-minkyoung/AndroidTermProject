@@ -24,19 +24,8 @@ class MusicBuddyAdapter(private val context: Context, private val musicBuddyList
             songArtistTextView.text = musicBuddy.description
 
             Glide.with(context)
-                .load(musicBuddy.profile)
-                .error(R.drawable.my_default_profile) // 로드 실패 시 기본 이미지 표시
+                .load(R.drawable.user)
                 .into(profileImageView)
-
-            // 클릭 이벤트 처리
-            itemView.setOnClickListener {
-                val intent = Intent(context, ProfileActivity::class.java)
-                // 클릭된 친구의 정보를 ProfileActivity로 전달
-                intent.putExtra("profileName", musicBuddy.name)
-                intent.putExtra("profileComment", musicBuddy.description)
-                intent.putExtra("profileImageUrl", musicBuddy.profile)
-                context.startActivity(intent)
-            }
         }
     }
 
