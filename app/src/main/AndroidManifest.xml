@@ -17,6 +17,7 @@
         <activity android:name=".viewmodel.CalendarActivity"/>
         <activity android:name=".viewmodel.DiaryActivity"/>
         <activity android:name=".viewmodel.MusicSearchActivity"/>
+        <activity android:name=".viewmodel.FindOtherActivity" />
         <activity
             android:name=".viewmodel.LoginActivity"
             android:exported="true">

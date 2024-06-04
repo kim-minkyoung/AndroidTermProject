@@ -3,24 +3,20 @@ package com.example.androidtermproject.viewmodel
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.View
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.GlideException
 import com.example.androidtermproject.R
 import com.example.androidtermproject.databinding.ActivityDiaryBinding
-import com.example.androidtermproject.databinding.ActivityProfileBinding
 import com.example.androidtermproject.mania_api.MusicItem
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
+import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -100,11 +96,21 @@ class DiaryActivity : AppCompatActivity() {
     }
 
     private fun setupButtonListeners() {
-        binding.diaryText.text = selectedMusic.title
+        // 음악이 선택된 경우에만 버튼을 "Find Others"로 변경하고 친구를 찾을 수 있는 페이지로 이동하도록 설정합니다.
 
-        binding.musicSearchFooterButton.setOnClickListener {
-            val intent = Intent(this, MusicSearchActivity::class.java)
-            startActivity(intent)
+        if (selectedMusic.title != "No Music") {
+            binding.musicSearchFooterButton.text = "Find Others"
+            binding.musicSearchFooterButton.setOnClickListener {
+                val intent = Intent(this, FindOtherActivity::class.java)
+                intent.putExtra("selectedMusic", selectedMusic as Serializable)
+                startActivity(intent)
+            }
+        } else {
+            // 음악이 선택되지 않은 경우에는 기존 동작을 유지합니다.
+            binding.musicSearchFooterButton.setOnClickListener {
+                val intent = Intent(this, MusicSearchActivity::class.java)
+                startActivity(intent)
+            }
         }
 
         binding.diaryLeftButton.setOnClickListener {
@@ -132,7 +138,9 @@ class DiaryActivity : AppCompatActivity() {
         if (user != null) {
             val diaryEntry = mapOf(
                 "diaryText" to binding.diaryTextEdit.text.toString(),
-                "selectedMusic" to selectedMusic.title // 음악 정보를 저장
+                "selectedMusic" to selectedMusic.title, // 음악 정보를 저장
+                "selectedMusic" to selectedMusic.artist, // 음악 정보를 저장
+                "selectedMusic" to selectedMusic.albumImage // 음악 정보를 저장
 
             )
 
