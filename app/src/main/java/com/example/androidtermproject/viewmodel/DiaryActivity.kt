@@ -16,6 +16,7 @@ import com.example.androidtermproject.databinding.ActivityDiaryBinding
 import com.example.androidtermproject.mania_api.MusicItem
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -45,9 +46,9 @@ class DiaryActivity : AppCompatActivity() {
         selectedDate = intent.getStringExtra("selectedDate") ?: ""
         selectedMusic = intent.getSerializableExtra("selectedMusic") as? MusicItem ?: MusicItem("No Music","Artist - ","")
 
-        val musicTitle = findViewById<TextView>(R.id.musicTitle)
-        val musicArtist = findViewById<TextView>(R.id.musicArtist)
-        val musicImage = findViewById<ImageView>(R.id.musicImage)
+        val musicTitle = binding.musicTitle
+        val musicArtist = binding.musicArtist
+        val musicImage = binding.musicImage
         musicTitle.text = selectedMusic.title
         musicArtist.text = selectedMusic.artist
         Glide.with(this).load(selectedMusic.albumImage).error(R.drawable.default_music_img).into(musicImage)
@@ -64,9 +65,16 @@ class DiaryActivity : AppCompatActivity() {
         }
 
         setupButtonListeners()
-        loadDiaryData(selectedDate)
+        loadSelectedMusicFromFirebase()
+//        loadDiaryData(selectedDate)
 
         diaryBeforeEdit = binding.diaryText.text.toString()
+    }
+
+    //새로고침 시 데이터 새로 로드
+    override fun onResume() {
+        super.onResume()
+        loadSelectedMusicFromFirebase()
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -74,26 +82,65 @@ class DiaryActivity : AppCompatActivity() {
         return true
     }
 
-    private fun loadDiaryData(date: String) {
+    private fun loadSelectedMusicFromFirebase() {
         val user = auth.currentUser
         if (user != null) {
             db.collection("users").document(user.uid)
-                .collection("diaries").document(date)
+                .collection("diaries").document(selectedDate)
                 .get()
-                .addOnSuccessListener { document ->
-                    val diaryText = document.getString("diaryText") ?: ""
-                    binding.diaryText.text = diaryText
-                    switchEditMode(false)
+                .addOnSuccessListener { documentSnapshot ->
+                    if (documentSnapshot.exists()) {
+                        val musicTitle = documentSnapshot.getString("musicTitle")
+                        val musicArtist = documentSnapshot.getString("musicArtist")
+                        val musicAlbumImage = documentSnapshot.getString("musicAlbumImage")
+                        val diaryText = documentSnapshot.getString("diaryText") ?: ""
+                        binding.diaryText.text = diaryText
+                        switchEditMode(false)
+
+                        binding.musicTitle.text = musicTitle ?: "No Music"
+                        binding.musicArtist.text = musicArtist ?: "Artist -"
+                        Glide.with(this@DiaryActivity)
+                            .load(musicAlbumImage)
+                            .error(R.drawable.default_music_img)
+                            .into(binding.musicImage)
+                    } else {
+                        // 데이터가 없는 경우
+                        binding.musicTitle.text = "No Music"
+                        binding.musicArtist.text = "Artist -"
+                        // 기본 이미지를 설정할 수도 있습니다.
+                        Glide.with(this@DiaryActivity)
+                            .load(R.drawable.default_music_img)
+                            .into(binding.musicImage)
+                        Log.d("MusicSearchActivity", "No music data found for selected date")
+                    }
                 }
-                .addOnFailureListener { exception ->
-                    Toast.makeText(this, "Failed to load diary data: ${exception.message}", Toast.LENGTH_SHORT).show()
-                    Log.d("DiaryActivity", "Failed to load diary data: ${exception.message}")
+                .addOnFailureListener { e ->
+                    Log.e("MusicSearchActivity", "Error fetching music data: ${e.message}", e)
+                    Toast.makeText(this@DiaryActivity, "Failed to fetch music data", Toast.LENGTH_SHORT).show()
                 }
-        }
-        else {
-            Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show()
         }
     }
+
+//    private fun loadDiaryData(date: String) {
+//        val user = auth.currentUser
+//        if (user != null) {
+//            db.collection("users").document(user.uid)
+//                .collection("diaries").document(date)
+//                .get()
+//                .addOnSuccessListener { document ->
+//                    val diaryText = document.getString("diaryText") ?: ""
+//                    binding.diaryText.text = diaryText
+//                    switchEditMode(false)
+//                }
+//                .addOnFailureListener { exception ->
+//                    Toast.makeText(this, "Failed to load diary data: ${exception.message}", Toast.LENGTH_SHORT).show()
+//                    Log.d("DiaryActivity", "Failed to load diary data: ${exception.message}")
+//                }
+//        }
+//        else {
+//            Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show()
+//        }
+//    }
 
     private fun setupButtonListeners() {
         // 음악이 선택된 경우에만 버튼을 "Find Others"로 변경하고 친구를 찾을 수 있는 페이지로 이동하도록 설정합니다.
@@ -109,6 +156,7 @@ class DiaryActivity : AppCompatActivity() {
             // 음악이 선택되지 않은 경우에는 기존 동작을 유지합니다.
             binding.musicSearchFooterButton.setOnClickListener {
                 val intent = Intent(this, MusicSearchActivity::class.java)
+                intent.putExtra("selectedDate", selectedDate as Serializable)
                 startActivity(intent)
             }
         }
@@ -137,16 +185,13 @@ class DiaryActivity : AppCompatActivity() {
         val user = auth.currentUser
         if (user != null) {
             val diaryEntry = mapOf(
-                "diaryText" to binding.diaryTextEdit.text.toString(),
-                "selectedMusic" to selectedMusic.title, // 음악 정보를 저장
-                "selectedMusic" to selectedMusic.artist, // 음악 정보를 저장
-                "selectedMusic" to selectedMusic.albumImage // 음악 정보를 저장
+                "diaryText" to binding.diaryTextEdit.text.toString()
 
             )
 
             db.collection("users").document(user.uid)
                 .collection("diaries").document(date)
-                .set(diaryEntry)
+                .set(diaryEntry, SetOptions.merge())
                 .addOnSuccessListener {
                     Toast.makeText(this, "Diary Updated", Toast.LENGTH_SHORT).show()
                     binding.diaryText.text = binding.diaryTextEdit.text

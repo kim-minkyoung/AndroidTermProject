@@ -2,7 +2,6 @@ package com.example.androidtermproject.viewmodel
 
 import MusicAdapter
 import MusicResponse
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -16,12 +15,14 @@ import com.example.androidtermproject.R
 import com.example.androidtermproject.databinding.ActivityMusicSearchBinding
 import com.example.androidtermproject.mania_api.ApiClient
 import com.example.androidtermproject.mania_api.MusicItem
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import okhttp3.ResponseBody
 import org.simpleframework.xml.core.Persister
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.io.Serializable
 
 class MusicSearchActivity : AppCompatActivity() {
 
@@ -31,12 +32,23 @@ class MusicSearchActivity : AppCompatActivity() {
     private lateinit var musicAdapter: MusicAdapter
     private lateinit var binding: ActivityMusicSearchBinding
     private var selectedMusic: MusicItem? = null
+    private lateinit var selectedDate: String
 
+    // Initialize Firestore
+    private val db = FirebaseFirestore.getInstance()
+    private lateinit var auth: FirebaseAuth
+    private var currentUserId: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMusicSearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        auth = FirebaseAuth.getInstance()
+        currentUserId = auth.currentUser?.uid ?: ""
+
+        // 인텐트로부터 선택된 날짜를 가져옴
+        selectedDate = intent.getStringExtra("selectedDate") ?: ""
 
         supportActionBar?.apply {
             title = "Music Search"
@@ -57,13 +69,12 @@ class MusicSearchActivity : AppCompatActivity() {
         )
 
         val moveToDiaryButton = findViewById<Button>(R.id.moveToDiaryButton)
-        moveToDiaryButton.text = "Move to Diary"
+        moveToDiaryButton.text = "Save Music"
         moveToDiaryButton.setBackgroundResource(R.drawable.button_purple_radious)
         moveToDiaryButton.setOnClickListener {
             if (selectedMusic != null) {
-                val intent = Intent(this, DiaryActivity::class.java)
-                intent.putExtra("selectedMusic", selectedMusic as Serializable)
-                startActivity(intent)
+                saveSelectedMusicToFirebase()
+                finish()
             } else {
                 Toast.makeText(this, "음악을 선택하세요", Toast.LENGTH_SHORT).show()
             }
@@ -84,6 +95,29 @@ class MusicSearchActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun saveSelectedMusicToFirebase() {
+        val user = auth.currentUser
+        if (user != null && selectedMusic != null) {
+            val diaryEntry = mapOf(
+                "musicTitle" to selectedMusic?.title,
+                "musicArtist" to selectedMusic?.artist,
+                "musicAlbumImage" to selectedMusic?.albumImage
+            )
+
+            db.collection("users").document(user.uid)
+                .collection("diaries").document(selectedDate)
+                .set(diaryEntry, SetOptions.merge())
+                .addOnSuccessListener {
+                    Toast.makeText(this, "음악이 저장되었습니다", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener { e ->
+                    Log.w("MusicSearchActivity", "Error adding document", e)
+                    Toast.makeText(this, "음악 저장에 실패했습니다", Toast.LENGTH_SHORT).show()
+                }
+        }
+    }
+
 
     private fun searchSongs(query: String) {
         ApiClient.instance.searchSongs(query).enqueue(object : Callback<ResponseBody> {
