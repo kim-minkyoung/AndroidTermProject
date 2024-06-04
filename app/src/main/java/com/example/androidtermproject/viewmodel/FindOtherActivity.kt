@@ -2,6 +2,7 @@ package com.example.androidtermproject.viewmodel
 
 import MusicBuddyAdapter
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView

@@ -96,6 +96,13 @@ class DiaryActivity : AppCompatActivity() {
                         binding.diaryText.text = diaryText
                         switchEditMode(false)
 
+                        selectedMusic = MusicItem(
+                            title = musicTitle ?: "No Music",
+                            artist = musicArtist ?: "Artist -",
+                            albumImage = musicAlbumImage ?: ""
+                        )
+
+
                         binding.musicTitle.text = musicTitle ?: "No Music"
                         binding.musicArtist.text = musicArtist ?: "Artist -"
                         Glide.with(this@DiaryActivity)
