@@ -8,7 +8,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.androidtermproject.R
-import com.example.androidtermproject.databinding.ActivityMusicSearchBinding
 import com.example.androidtermproject.mania_api.MusicBuddy
 import com.example.androidtermproject.viewmodel.ProfileActivity
 
@@ -16,8 +15,8 @@ class MusicBuddyAdapter(private val context: Context, private val musicBuddyList
     RecyclerView.Adapter<MusicBuddyAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val songTitleTextView: TextView = itemView.findViewById(R.id.songTitleTextView)
-        private val songArtistTextView: TextView = itemView.findViewById(R.id.songArtistTextView)
+        private val songTitleTextView: TextView = itemView.findViewById(R.id.titleTextView)
+        private val songArtistTextView: TextView = itemView.findViewById(R.id.subTitleTextView)
         private val profileImageView: ImageView = itemView.findViewById(R.id.songImageView)
 
         fun bind(musicBuddy: MusicBuddy) {
@@ -42,7 +41,7 @@ class MusicBuddyAdapter(private val context: Context, private val musicBuddyList
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(context).inflate(R.layout.item_song, parent, false)
+        val view = LayoutInflater.from(context).inflate(R.layout.item_block, parent, false)
         return ViewHolder(view)
     }
 

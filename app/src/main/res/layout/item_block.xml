@@ -20,7 +20,7 @@
         android:paddingLeft="20dp"
         >
         <TextView
-            android:id="@+id/songTitleTextView"
+            android:id="@+id/titleTextView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="Song Title"
@@ -29,7 +29,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/songArtistTextView"
+            android:id="@+id/subTitleTextView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="Artist Name"

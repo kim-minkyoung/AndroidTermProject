@@ -24,7 +24,7 @@ class MusicAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_song, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_block, parent, false)
         return ViewHolder(view)
     }
 
@@ -39,8 +39,8 @@ class MusicAdapter(
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(item: MusicItem, position: Int) {
-            val titleTextView = itemView.findViewById<TextView>(R.id.songTitleTextView)
-            val artistTextView = itemView.findViewById<TextView>(R.id.songArtistTextView)
+            val titleTextView = itemView.findViewById<TextView>(R.id.titleTextView)
+            val artistTextView = itemView.findViewById<TextView>(R.id.subTitleTextView)
             val albumImageView = itemView.findViewById<ImageView>(R.id.songImageView)
 
             titleTextView.text = item.title
