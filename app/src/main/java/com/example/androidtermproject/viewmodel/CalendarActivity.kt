@@ -105,9 +105,6 @@ class CalendarActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        drawerBinding.profileRecyclerView.layoutManager = LinearLayoutManager(this)
-        drawerBinding.profileRecyclerView.adapter = DrawerAdapter(friendsProfile)
-
         drawerBinding.logoutButton.setOnClickListener {
             showLogoutDialog()
         }
