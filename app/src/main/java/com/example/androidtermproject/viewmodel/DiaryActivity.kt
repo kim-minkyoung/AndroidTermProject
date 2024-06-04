@@ -64,7 +64,6 @@ class DiaryActivity : AppCompatActivity() {
             setDisplayHomeAsUpEnabled(true) // 뒤로가기 버튼 활성화
         }
 
-        setupButtonListeners()
         loadSelectedMusicFromFirebase()
 //        loadDiaryData(selectedDate)
 
@@ -103,6 +102,7 @@ class DiaryActivity : AppCompatActivity() {
                             .load(musicAlbumImage)
                             .error(R.drawable.default_music_img)
                             .into(binding.musicImage)
+                        setupButtonListeners(musicTitle)
                     } else {
                         // 데이터가 없는 경우
                         binding.musicTitle.text = "No Music"
@@ -111,6 +111,7 @@ class DiaryActivity : AppCompatActivity() {
                         Glide.with(this@DiaryActivity)
                             .load(R.drawable.default_music_img)
                             .into(binding.musicImage)
+                        setupButtonListeners("")
                         Log.d("MusicSearchActivity", "No music data found for selected date")
                     }
                 }
@@ -121,31 +122,9 @@ class DiaryActivity : AppCompatActivity() {
         }
     }
 
-//    private fun loadDiaryData(date: String) {
-//        val user = auth.currentUser
-//        if (user != null) {
-//            db.collection("users").document(user.uid)
-//                .collection("diaries").document(date)
-//                .get()
-//                .addOnSuccessListener { document ->
-//                    val diaryText = document.getString("diaryText") ?: ""
-//                    binding.diaryText.text = diaryText
-//                    switchEditMode(false)
-//                }
-//                .addOnFailureListener { exception ->
-//                    Toast.makeText(this, "Failed to load diary data: ${exception.message}", Toast.LENGTH_SHORT).show()
-//                    Log.d("DiaryActivity", "Failed to load diary data: ${exception.message}")
-//                }
-//        }
-//        else {
-//            Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show()
-//        }
-//    }
-
-    private fun setupButtonListeners() {
+    private fun setupButtonListeners(musicTitle: String?) {
         // 음악이 선택된 경우에만 버튼을 "Find Others"로 변경하고 친구를 찾을 수 있는 페이지로 이동하도록 설정합니다.
-
-        if (selectedMusic.title != "No Music") {
+        if (!musicTitle.isNullOrEmpty()) {
             binding.musicSearchFooterButton.text = "Find Others"
             binding.musicSearchFooterButton.setOnClickListener {
                 val intent = Intent(this, FindOtherActivity::class.java)
@@ -208,6 +187,7 @@ class DiaryActivity : AppCompatActivity() {
         builder.setMessage("${date}의 다이어리를 삭제하시겠습니까?")
             .setPositiveButton("예", DialogInterface.OnClickListener { dialog, id ->
                 deleteDiaryData(date)
+                onResume()
             })
             .setNegativeButton("아니요", DialogInterface.OnClickListener { dialog, id ->
                 dialog.dismiss()
