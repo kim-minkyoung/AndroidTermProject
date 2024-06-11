@@ -17,6 +17,7 @@ import com.example.androidtermproject.databinding.CalendarDrawerLayoutBinding
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -136,28 +137,50 @@ class CalendarActivity : AppCompatActivity() {
             // Firebase 사용자 가져오기
             val user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
 
-            // Firebase 사용자 삭제
-            user?.delete()?.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    // 사용자 삭제 성공
-                    Toast.makeText(this, "탈퇴 처리 완료되었습니다.", Toast.LENGTH_SHORT).show()
+            // 사용자 ID
+            val userId = user?.uid
 
-                    // 로그아웃
-                    FirebaseAuth.getInstance().signOut()
+            // Firestore 인스턴스
+            val db = FirebaseFirestore.getInstance()
 
-                    // 로그인 화면으로 이동
-                    val intent = Intent(this, LoginActivity::class.java)
-                    startActivity(intent)
-                    finish() // 현재 화면 종료
-                } else {
-                    // 사용자 삭제 실패
-                    val errorMessage = "탈퇴 처리 실패: ${task.exception?.message}"
-                    Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
+            // 사용자 관련 Firestore 데이터 삭제
+            if (userId != null) {
+                db.collection("users").document(userId).delete().addOnCompleteListener { deleteTask ->
+                    if (deleteTask.isSuccessful) {
+                        // Firestore 데이터 삭제 성공
+                        // Firebase 사용자 삭제
+                        user.delete().addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                // 사용자 삭제 성공
+                                Toast.makeText(this, "탈퇴 처리 완료되었습니다.", Toast.LENGTH_SHORT).show()
+
+                                // 로그아웃
+                                FirebaseAuth.getInstance().signOut()
+
+                                // 로그인 화면으로 이동
+                                val intent = Intent(this, LoginActivity::class.java)
+                                startActivity(intent)
+                                finish() // 현재 화면 종료
+                            } else {
+                                // 사용자 삭제 실패
+                                val errorMessage = "탈퇴 처리 실패: ${task.exception?.message}"
+                                Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    } else {
+                        // Firestore 데이터 삭제 실패
+                        val errorMessage = "탈퇴 처리 실패 (Firestore): ${deleteTask.exception?.message}"
+                        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
+                    }
                 }
+            } else {
+                // 사용자가 null인 경우
+                Toast.makeText(this, "사용자 정보가 존재하지 않습니다.", Toast.LENGTH_SHORT).show()
             }
 
             dialog.dismiss()
         }
+
         builder.setNegativeButton("취소", null)
         builder.show()
     }

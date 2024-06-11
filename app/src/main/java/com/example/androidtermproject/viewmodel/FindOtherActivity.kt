@@ -55,6 +55,11 @@ class FindOtherActivity : AppCompatActivity() {
         selectedMusic?.let { loadUsersMusicBuddies(it) }
     }
 
+    //새로고침 시 데이터 새로 로드
+    override fun onResume() {
+        super.onResume()
+    }
+
     private fun loadUsersMusicBuddies(selectedMusic: MusicItem) {
         val usersCollectionRef = db.collection("users")
 
